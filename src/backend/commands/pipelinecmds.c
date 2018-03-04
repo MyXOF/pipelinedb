@@ -1089,7 +1089,16 @@ ExecCreateContTransformStmt(CreateContTransformStmt *stmt, const char *querystri
 
 	if (IsBinaryUpgrade)
 		set_next_oids_for_matrel();
-	address = DefineRelation(create, RELKIND_VIEW, InvalidOid, NULL);
+
+	// should this all be the same as how we create the CV overlay?
+
+	ViewStmt *vstmt = makeNode(ViewStmt);
+	vstmt->view = create->relation;
+	vstmt->query = stmt->query;
+
+//	address = DefineRelation(create, RELKIND_VIEW, InvalidOid, NULL);
+	address = DefineView(vstmt, querystring);
+
 	relid = address.objectId;
 	CommandCounterIncrement();
 
